@@ -25,28 +25,21 @@ router.get('/:id', (req, res) => {
 //peticion POST para almaencar un producto nuevo
 router.post('/', (req, res) => {
   const body = req.body;
-  res.status(201).json({
-    message: 'created',
-    data: body
-  });
+  const newProduct = productService.create(body);
+  res.status(201).json({newProduct});
 });
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
   const body = req.body;
-  res.json({
-    message: 'created',
-    id,
-    data: body
-  });
+  const updateProduct = productService.update(id,body)
+  res.json(updateProduct);
 });
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  res.json({
-    message: 'created',
-    id
-  });
+  const deleteProduct = productService.delete(id);
+  res.json(deleteProduct);
 });
 
 
