@@ -4,6 +4,8 @@ const routerApi = require('./route');
 const app = express(); // se instacion el obejto de express
 const port = 3000; // se indica el puerto tcp donde escuhara el app
 
+
+/*
 //peticion GET hjacia el servidor, este deberia responde el texto anexo al send
 app.get('/', (req, res) => {
   res.send('My server en ExpressJS');
@@ -12,8 +14,9 @@ app.get('/', (req, res) => {
 //peticion get a una router
 app.get('/newEndpoint', (req, res) => {
   res.send('Nueva ruta');
-});
+}); */
 
+app.use(express.json());
 routerApi(app);
 
 //alisto el app para que esuche en el puerto 3000
