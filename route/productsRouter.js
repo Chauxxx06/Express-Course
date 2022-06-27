@@ -1,5 +1,7 @@
 const express = require('express'); // Importar en node el framework express
 const ProductServices = require('../services/productService');
+const validatorHandler = require('../middleware/validatorHandler');
+const { createProductSchema, getProductSchema } = require('../schemas/productSchema')
 
 const router = express.Router();
 const productService = new ProductServices();
@@ -16,36 +18,51 @@ router.get('/', async (req, res) => {
 });
 
 //peticion GET se pide un parametro de id
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  const product = await productService.findOne(id);
-  res.json(product);
+//Adicion de middleware, inicilamente inicia con la validacion del schema, luego de validacion sigue con el middleware
+//de request-respond (HTTP), si hay falla, sigue con el middleware del Error, predefinido en el Index General
+router.get('/:id',
+  validatorHandler(getProductSchema, 'params') ,
+  async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await productService.findOne(id);
+    res.json(product);
+  } catch (err) {
+    next(err);
+  }
 });
 
 //peticion POST para almaencar un producto nuevo
-router.post('/', async (req, res) => {
+router.post('/',
+  validatorHandler(createProductSchema, 'body'),
+  async (req, res) => {
   const body = req.body;
   const newProduct = await productService.create(body);
   res.status(201).json({newProduct});
 });
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(createProductSchema, 'body'),
+  async (req, res, next) => {
   try {
     const { id } = req.params;
     const body = req.body;
     const updateProduct = await productService.update(id, body);
     res.json(updateProduct);
   } catch (error) {
-    res.status(404).json({
-      message: error.message
-    });
+    next(error);
   }
 });
 
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  const deleteProduct = await productService.delete(id);
-  res.json(deleteProduct);
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const deleteProduct = await productService.delete(id);
+    res.json(deleteProduct);
+  } catch (error) {
+    next(error);
+  }
 });
 
 

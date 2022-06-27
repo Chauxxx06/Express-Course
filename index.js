@@ -1,5 +1,6 @@
 const express = require('express'); // Importar en node el framework express
 const routerApi = require('./route');
+const { logErrors, errorHandler, boomErrorHandler } = require('./middleware/errorHandler');
 /* const { faker } = require('@faker-js/faker'); */
 const app = express(); // se instacion el obejto de express
 const port = 3000; // se indica el puerto tcp donde escuhara el app
@@ -18,6 +19,9 @@ app.get('/newEndpoint', (req, res) => {
 
 app.use(express.json());
 routerApi(app);
+app.use(logErrors);
+app.use(boomErrorHandler);
+app.use(errorHandler);
 
 //alisto el app para que esuche en el puerto 3000
 app.listen(port, () => {
